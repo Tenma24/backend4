@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Auto Dealership — Cars</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --panel: rgba(255,255,255,0.06);
+      --panel2: rgba(255,255,255,0.09);
+      --stroke: rgba(255,255,255,0.12);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.68);
+      --good: #22c55e;
+      --bad: #ef4444;
+      --warn: #f59e0b;
+      --shadow: 0 18px 50px rgba(0,0,0,0.35);
+      --radius: 18px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 800px at 20% -10%, rgba(59,130,246,0.35), transparent 60%),
+        radial-gradient(1000px 700px at 110% 20%, rgba(168,85,247,0.28), transparent 55%),
+        radial-gradient(800px 600px at 30% 120%, rgba(34,197,94,0.18), transparent 55%),
+        var(--bg);
+      min-height: 100vh;
+    }
+
+    .wrap{ max-width: 1150px; margin: 0 auto; padding: 22px 16px 60px; }
+
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between; gap:14px;
+      padding: 14px 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.05));
+      border: 1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      flex-wrap: wrap;
+    }
+    .brand{ display:flex; gap:12px; align-items:center; }
+    .logo{
+      width:42px;height:42px;border-radius:14px;
+      background: linear-gradient(135deg, rgba(59,130,246,1), rgba(168,85,247,1));
+      box-shadow: 0 14px 35px rgba(59,130,246,0.25);
+      display:grid;place-items:center; font-weight:800;
+    }
+    .brand h1{ margin:0; font-size: 18px; line-height: 1.2; }
+    .brand p{ margin:2px 0 0; color: var(--muted); font-size: 13px; }
+
+    .stats{ display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; align-items:center; }
+    .pill{
+      padding: 10px 12px; border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--stroke);
+      color: var(--muted);
+      font-size: 13px;
+      white-space:nowrap;
+    }
+    .pill b{ color: var(--text); }
+
+    .grid{ display:grid; grid-template-columns: 380px 1fr; gap: 16px; margin-top: 16px; }
+    @media (max-width: 980px){ .grid{ grid-template-columns: 1fr; } }
+
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      border: 1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      overflow:hidden;
+    }
+    .panelHead{ padding: 14px 14px 10px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .panelHead h2{ margin:0; font-size: 15px; letter-spacing: 0.2px; }
+    .panelHead p{ margin: 6px 0 0; color: var(--muted); font-size: 13px; }
+    .panelBody{ padding: 14px; }
+
+    .row{ display:grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .row1{ display:grid; grid-template-columns: 1fr; gap: 10px; }
+
+    label{ font-size: 12px; color: var(--muted); display:block; margin-bottom: 6px; }
+    input, select, textarea{
+      width:100%;
+      padding: 11px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.25);
+      color: var(--text);
+      outline: none;
+    }
+    textarea{ min-height: 90px; resize: vertical; }
+
+    .actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top: 12px; }
+    .btn{
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      padding: 11px 14px;
+      border-radius: 14px;
+      cursor:pointer;
+      transition: transform .06s ease, background .2s ease;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .btn:hover{ background: rgba(255,255,255,0.12); }
+    .btn:active{ transform: translateY(1px); }
+    .btnPrimary{
+      background: linear-gradient(135deg, rgba(34,197,94,0.9), rgba(16,185,129,0.9));
+      border-color: rgba(34,197,94,0.35);
+      box-shadow: 0 12px 30px rgba(34,197,94,0.18);
+    }
+    .btnDanger{ background: rgba(239,68,68,0.16); border-color: rgba(239,68,68,0.25); }
+    .btnGhost{ background: transparent; }
+
+    .filters{
+      display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between;
+      padding: 14px; border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .filtersLeft{ display:flex; gap:10px; flex-wrap:wrap; flex:1; }
+    .filtersRight{ display:flex; gap:10px; flex-wrap:wrap; }
+    .mini{
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.22);
+      color: var(--text);
+      min-width: 180px;
+    }
+    .selectMini{ min-width: 160px; }
+
+    .list{ padding: 14px; display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    @media (max-width: 980px){ .list{ grid-template-columns: 1fr; } }
+    .card{
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      padding: 14px;
+      display:flex; flex-direction:column; gap: 10px;
+    }
+    .cardTop{ display:flex; justify-content:space-between; gap: 10px; align-items:flex-start; }
+    .title{ margin:0; font-size: 15px; letter-spacing: 0.2px; }
+    .subtitle{ margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .price{
+      font-weight: 800; font-size: 15px; white-space:nowrap;
+      background: rgba(34,197,94,0.14);
+      border: 1px solid rgba(34,197,94,0.20);
+      padding: 8px 10px;
+      border-radius: 999px;
+    }
+    .chips{ display:flex; flex-wrap:wrap; gap: 8px; }
+    .chip{
+      font-size: 12px; color: var(--muted);
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.16);
+    }
+    .cardBtns{ display:flex; gap:10px; flex-wrap:wrap; margin-top: 2px; }
+
+    .toast{
+      position: fixed; right: 16px; bottom: 16px; max-width: 420px;
+      padding: 12px 14px; border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.55);
+      color: var(--text);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      display:none;
+    }
+    .toast.show{ display:block; }
+    .toast.good{ border-color: rgba(34,197,94,0.35); }
+    .toast.bad{ border-color: rgba(239,68,68,0.35); }
+
+    .modalOverlay{
+      position: fixed; inset:0;
+      background: rgba(0,0,0,0.55);
+      display:none;
+      align-items:center; justify-content:center;
+      padding: 16px;
+    }
+    .modalOverlay.show{ display:flex; }
+    .modal{
+      width: min(720px, 100%);
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(12,18,32,0.92);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .modalHead{
+      padding: 14px 14px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+    }
+    .modalHead b{ font-size: 14px; }
+    .modalBody{ padding: 14px; }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">AD</div>
+        <div>
+          <h1>Ramazan Motors</h1>
+          <p>Cars catalog (Assignment 4)</p>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="pill">Total cars: <b id="statTotal">0</b></div>
+        <div class="pill">Last sync: <b id="statSync">—</b></div>
+        <div class="pill">Auth: <b id="authStatus">Guest</b></div>
+        <button class="btn" id="logoutBtn" style="display:none">Logout</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- LEFT -->
+      <section class="panel">
+        <div class="panelHead">
+          <h2>Admin panel</h2>
+          <p>Login → then you can add / edit / delete cars (admin only)</p>
+        </div>
+
+        <div class="panelBody">
+          <div class="row1">
+            <div>
+              <label>Email</label>
+              <input id="loginEmail" placeholder="admin@mail.com" />
+            </div>
+            <div>
+              <label>Password</label>
+              <input id="loginPassword" placeholder="123456" type="password" />
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn" id="loginBtn">Login</button>
+          </div>
+
+          <div style="height:14px"></div>
+
+          <div class="row">
+            <div>
+              <label>Brand *</label>
+              <input id="brand" placeholder="Toyota" />
+            </div>
+            <div>
+              <label>Model *</label>
+              <input id="model" placeholder="Camry" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>Year *</label>
+              <input id="year" placeholder="2020" inputmode="numeric" />
+            </div>
+            <div>
+              <label>Price (KZT) *</label>
+              <input id="price" placeholder="13500000" inputmode="numeric" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>Mileage (km)</label>
+              <input id="mileage" placeholder="65000" inputmode="numeric" />
+            </div>
+            <div>
+              <label>Color</label>
+              <input id="color" placeholder="White" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>Transmission</label>
+              <select id="transmission">
+                <option value="">—</option>
+                <option value="AT">AT</option>
+                <option value="MT">MT</option>
+              </select>
+            </div>
+            <div>
+              <label>Fuel</label>
+              <select id="fuel">
+                <option value="">—</option>
+                <option value="Gasoline">Gasoline</option>
+                <option value="Diesel">Diesel</option>
+                <option value="Hybrid">Hybrid</option>
+                <option value="Electric">Electric</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row1">
+            <div>
+              <label>Description</label>
+              <textarea id="description" placeholder="Condition, owner, options..."></textarea>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn btnPrimary" id="addBtn">Add car</button>
+            <button class="btn btnGhost" id="clearBtn">Clear</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT -->
+      <section class="panel">
+        <div class="filters">
+          <div class="filtersLeft">
+            <input class="mini" id="search" placeholder="Search: Toyota, Camry, 2020..." />
+            <select class="mini selectMini" id="sort">
+              <option value="new">Sort: Newest</option>
+              <option value="priceAsc">Sort: Price (low → high)</option>
+              <option value="priceDesc">Sort: Price (high → low)</option>
+              <option value="yearDesc">Sort: Year (new → old)</option>
+              <option value="yearAsc">Sort: Year (old → new)</option>
+            </select>
+          </div>
+          <div class="filtersRight">
+            <button class="btn" id="loadBtn">Refresh</button>
+          </div>
+        </div>
+
+        <div class="list" id="list"></div>
+      </section>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- Edit Modal -->
+  <div class="modalOverlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modalHead">
+        <b>Edit car</b>
+        <button class="btn btnGhost" id="modalClose">Close</button>
+      </div>
+      <div class="modalBody">
+        <div class="row">
+          <div>
+            <label>Brand *</label>
+            <input id="e_brand" />
+          </div>
+          <div>
+            <label>Model *</label>
+            <input id="e_model" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Year *</label>
+            <input id="e_year" inputmode="numeric" />
+          </div>
+          <div>
+            <label>Price (KZT) *</label>
+            <input id="e_price" inputmode="numeric" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Mileage (km)</label>
+            <input id="e_mileage" inputmode="numeric" />
+          </div>
+          <div>
+            <label>Color</label>
+            <input id="e_color" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Transmission</label>
+            <select id="e_transmission">
+              <option value="">—</option>
+              <option value="AT">AT</option>
+              <option value="MT">MT</option>
+            </select>
+          </div>
+          <div>
+            <label>Fuel</label>
+            <select id="e_fuel">
+              <option value="">—</option>
+              <option value="Gasoline">Gasoline</option>
+              <option value="Diesel">Diesel</option>
+              <option value="Hybrid">Hybrid</option>
+              <option value="Electric">Electric</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row1">
+          <div>
+            <label>Description</label>
+            <textarea id="e_description"></textarea>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn btnPrimary" id="saveBtn">Save changes</button>
+          <button class="btn btnDanger" id="deleteBtn">Delete car</button>
+          <span class="pill" id="editIdPill" style="margin-left:auto">id: <b id="editId">—</b></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
